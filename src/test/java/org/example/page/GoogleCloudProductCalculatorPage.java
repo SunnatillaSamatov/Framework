@@ -22,30 +22,30 @@ public class GoogleCloudProductCalculatorPage extends AbstractPage{
     private WebElement primaryIframe;
     @FindBy(xpath="//iframe[@id='myFrame']")
     private WebElement secondaryIframe;
-    @FindBy(xpath="/html/body/md-content/md-card/div/md-card-content[1]/div[2]/div/md-card/md-card-content/div/div[1]/form/div[1]/div[1]/md-input-container/input")
+    @FindBy(xpath="//input[@ng-model='listingCtrl.computeServer.quantity']")
     private WebElement instances;
     @FindBy(xpath = "//md-select[@placeholder='Series' and @name='series']")
     private WebElement series;
 
     @FindBy(xpath ="//md-select[@placeholder='Instance type']")
     private WebElement machineType ;
-    @FindBy(xpath = "//*[@id='mainForm']/div[2]/div/md-card/md-card-content/div/div[1]/form/div[13]/div[1]/md-input-container/md-checkbox" )
+    @FindBy(xpath = "//md-checkbox[@ng-model='listingCtrl.computeServer.addGPUs']" )
     private WebElement gpuCheckbox ;
     @FindBy(xpath = "//md-select[@placeholder='GPU type' and @aria-label='GPU type']")
     private WebElement gpuType ;
     @FindBy(xpath = "//md-select[@placeholder='Number of GPUs']" )
     private WebElement gpuNumber ;
-    @FindBy(xpath = "/html/body/md-content/md-card/div/md-card-content[1]/div[2]/div/md-card/md-card-content/div/div[1]/form/div[15]/div[1]/md-input-container/md-select" )
+    @FindBy(xpath = "//md-select[@ng-model='listingCtrl.computeServer.ssd']" )
     private WebElement localSSD ;
-    @FindBy(xpath = "/html/body/md-content/md-card/div/md-card-content[1]/div[2]/div/md-card/md-card-content/div/div[1]/form/div[16]/div[1]/md-input-container/md-select")
+    @FindBy(xpath = "//md-select[@ng-model='listingCtrl.computeServer.location']")
     private WebElement dataCenterLocation ;
-    @FindBy(xpath = "//md-card-content/div/div[1]/form/div[19]/div[1]/md-input-container/md-select" )
+    @FindBy(xpath = "//md-select[@placeholder='Committed usage' and @aria-label='Committed usage: None']" )
     private WebElement committedUsage ;
     @FindBy(xpath = "//*[@id='mainForm']/div[2]/div/md-card/md-card-content/div/div[1]/form/div[20]/button")
     private WebElement addToEstimateButton ;
     @FindBy(xpath = "//*[@id='Email Estimate']")
     private WebElement emailEstimateButton ;
-    @FindBy(xpath = "//*[@id='compute']/md-list/md-list-item[8]/div[1]/b")
+    @FindBy(xpath = "//div[@class='cpc-cart-total']/h2[@class='md-title']/b")
     private WebElement cost ;
     @FindBy(xpath = "//input[@name='description' and @type='email']")
     private WebElement userEmail ;
