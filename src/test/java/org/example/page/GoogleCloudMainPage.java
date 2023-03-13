@@ -9,14 +9,14 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 
 public class GoogleCloudMainPage extends AbstractPage
 {
 	private final String BASE_URL = "https://cloud.google.com/";
 	@FindBy(xpath="//input[@class='devsite-search-field devsite-search-query']")
 	private WebElement searchBox;
-	private By googleCloudCalculator = By.xpath("//a[b[text()='Google Cloud Pricing Calculator']]");
+	String searchItem ="Google Cloud Pricing Calculator";
+	private By googleCloudCalculator = By.xpath("//a[b[contains(text(),'" + searchItem + "')]]");
 
 
 	public GoogleCloudMainPage(WebDriver driver)
