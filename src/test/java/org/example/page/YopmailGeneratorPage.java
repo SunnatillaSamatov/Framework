@@ -1,5 +1,6 @@
 package org.example.page;
 
+import org.example.utils.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -46,7 +47,7 @@ public class YopmailGeneratorPage extends AbstractPage{
         driver.switchTo().window(tab.get(1));
         return new YopmailGeneratorPage(driver);
     }
-    public String getMonthlyCostFromInbox(){
+    public Double getMonthlyCostFromInbox(){
 
         driver.findElement(inboxButton).click();
         new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS)
@@ -55,7 +56,7 @@ public class YopmailGeneratorPage extends AbstractPage{
         WebElement message = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
                 .until(ExpectedConditions.presenceOfElementLocated(inboxMessage));
         message.click();
-        return message.getText();
+        return StringUtils.getMonthlyCost(message.getText());
 
     }
 }

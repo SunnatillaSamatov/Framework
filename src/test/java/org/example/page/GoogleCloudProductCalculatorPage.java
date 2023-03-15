@@ -1,6 +1,8 @@
 package org.example.page;
 
 import org.example.model.ComputeEngine;
+import org.example.service.ComputeEngineCreator;
+import org.example.utils.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 public class GoogleCloudProductCalculatorPage extends AbstractPage{
 
     private final String PAGE_URL="https://cloud.google.com/products/calculator";
+    private ComputeEngine engine = ComputeEngineCreator.withInputsFromProperty();
 
     @FindBy(xpath="//*[@id='cloud-site']/devsite-iframe/iframe")
     private WebElement primaryIframe;
@@ -24,35 +27,20 @@ public class GoogleCloudProductCalculatorPage extends AbstractPage{
     private WebElement instances;
     @FindBy(xpath = "//md-select[@placeholder='Series' and @name='series']")
     private WebElement series;
-    @FindBy(xpath = "//md-option[@value='n1']/div[@class='md-text ng-binding']")
-    private WebElement seriesTextValue;
-
     @FindBy(xpath ="//md-select[@placeholder='Instance type']")
     private WebElement machineType ;
-    @FindBy(xpath = "//md-option[@value='CP-COMPUTEENGINE-VMIMAGE-N1-STANDARD-8']/div[@class='md-text ng-binding']")
-    private WebElement machineTextValue;
     @FindBy(xpath = "//md-checkbox[@ng-model='listingCtrl.computeServer.addGPUs']" )
     private WebElement gpuCheckbox ;
     @FindBy(xpath = "//md-select[@placeholder='GPU type' and @aria-label='GPU type']")
     private WebElement gpuType ;
-    @FindBy(xpath = "//md-option[@value='NVIDIA_TESLA_V100']/div[@class='md-text ng-binding']")
-    private WebElement gpuTextValue;
     @FindBy(xpath = "//md-select[@placeholder='Number of GPUs']" )
     private WebElement gpuNumber ;
-    @FindBy(xpath = "//md-option[@ng-disabled='item.value != 0 && item.value < listingCtrl.minGPU' and @value='1']/div[@class='md-text ng-binding']")
-    private WebElement gpuNumberTextValue;
     @FindBy(xpath = "//md-select[@ng-model='listingCtrl.computeServer.ssd']" )
     private WebElement localSSD ;
-    @FindBy(xpath = "//md-option[@ng-repeat='item in listingCtrl.dynamicSsd.computeServer' and @value='2']/div[@class='md-text ng-binding']")
-    private WebElement localSSDTextValue;
     @FindBy(xpath = "//md-select[@ng-model='listingCtrl.computeServer.location']")
     private WebElement dataCenterLocation ;
-    @FindBy(xpath = "//md-option[@ng-repeat='item in listingCtrl.fullRegionList | filter:listingCtrl.inputRegionText.computeServer' and @value='europe-west3']/div[@class='md-text ng-binding']")
-    private WebElement dataCenterLocationTextValue;
     @FindBy(xpath = "//md-select[@placeholder='Committed usage' and @aria-label='Committed usage: None']" )
     private WebElement committedUsage ;
-    @FindBy(xpath = "//div[@class='md-select-menu-container md-active md-clickable']/md-select-menu/md-content/md-option[@ng-value='1']/div[@class='md-text']")
-    private WebElement committedUsageTextValue;
     @FindBy(xpath = "//button[@ng-click='listingCtrl.addComputeServer(ComputeEngineForm);']")
     private WebElement addToEstimateButton ;
     @FindBy(xpath = "//*[@id='Email Estimate']")
@@ -63,6 +51,20 @@ public class GoogleCloudProductCalculatorPage extends AbstractPage{
     private WebElement userEmail ;
     @FindBy(xpath = "//md-dialog[@aria-label='Email Estiamte']/form/md-dialog-actions/button[2]")
     private WebElement sendButton ;
+    private By seriesValueBy = By.xpath("//md-option[@value='" + engine.getSeries().toLowerCase() + "']");
+
+    private By machineValueBy = By.xpath("//md-option[@value='CP-COMPUTEENGINE-VMIMAGE-" + StringUtils.getFirstPart(engine.getMachineType()) +"']");
+
+    private By gpuValueBy = By.xpath("//md-option[@value='" + StringUtils.replaceSpaceToUnderscore(engine.getGpuModel()) + "']");
+
+    private By gpuNumberValueBy = By.xpath("//md-option[@ng-disabled='item.value != 0 && item.value < listingCtrl.minGPU' and @value='"+engine.getGpuNumber()+"']");
+
+    private By localSSDValueBy = By.xpath( "//md-option[@ng-repeat='item in listingCtrl.dynamicSsd.computeServer' and @value='"+StringUtils.getFirstNumber(engine.getLocalSSD())+"']");
+
+    private By dataCenterLocationValueBy = By.xpath("//md-option[@ng-repeat='item in listingCtrl.fullRegionList | filter:listingCtrl.inputRegionText.computeServer' and @value='"+ StringUtils.getInsideParentheses(engine.getDataCenterLocation())+ "']");
+
+    private By committedUsageValueBy = By.xpath("//div[@class='md-select-menu-container md-active md-clickable']/md-select-menu/md-content/md-option[@value='"+StringUtils.getFirstPart(engine.getCommittedUsage())+"']");
+                                                             //div[@class="md-select-menu-container md-active md-clickable"]/md-select-menu/md-content/md-option[@value="1"]
 
     public GoogleCloudProductCalculatorPage(WebDriver driver) {
         super(driver);
@@ -81,54 +83,40 @@ public class GoogleCloudProductCalculatorPage extends AbstractPage{
 
     }
 
-    public GoogleCloudProductCalculatorPage fillTechnicalForm(ComputeEngine engine){
+    public GoogleCloudProductCalculatorPage fillTechnicalForm(){
         switchToIframe();
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(instances)).sendKeys(engine.getInstances());
 
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(series)).click();
-        WebElement seriesLiteral = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(seriesTextValue));
-        checkWebElementTextAndGetItsParent(seriesLiteral,engine.getSeries()).click();
+        findWebElement(instances).sendKeys(engine.getInstances());
 
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(machineType)).click();
-        WebElement machineTypeLiteral = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(machineTextValue));
-        checkWebElementTextAndGetItsParent(machineTypeLiteral,engine.getMachineType()).click();
+        findWebElement(series).click();
 
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(gpuCheckbox)).click();
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(gpuType)).click();
-        WebElement gpuLiteral = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(gpuTextValue));
-        checkWebElementTextAndGetItsParent(gpuLiteral,engine.getGpuModel()).click();
+        findWebElement(seriesValueBy).click();
 
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(gpuNumber)).click();
-        WebElement gpuNumberLiteral = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(gpuNumberTextValue));
-        checkWebElementTextAndGetItsParent(gpuNumberLiteral,engine.getGpuNumber()).click();
+        findWebElement(machineType).click();
 
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(localSSD)).click();
-        WebElement localSSDLiteral = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(localSSDTextValue));
-        checkWebElementTextAndGetItsParent(localSSDLiteral,engine.getLocalSSD()).click();
+        findWebElement(machineValueBy).click();
 
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(dataCenterLocation)).click();
-        WebElement dataCenterLocationLiteral = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(dataCenterLocationTextValue));
-        checkWebElementTextAndGetItsParent(dataCenterLocationLiteral, engine.getDataCenterLocation()).click();
+        findWebElement(gpuCheckbox).click();
 
-        new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(committedUsage)).click();
-        WebElement committedUsageLiteral = new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-                .until(ExpectedConditions.elementToBeClickable(committedUsageTextValue));
-        checkWebElementTextAndGetItsParent(committedUsageLiteral,engine.getCommittedUsage()).click();
+        findWebElement(gpuType).click();
+
+        findWebElement(gpuValueBy).click();
+
+        findWebElement(gpuNumber).click();
+
+        findWebElement(gpuNumberValueBy).click();
+
+        findWebElement(localSSD).click();
+
+        findWebElement(localSSDValueBy).click();
+
+        findWebElement(dataCenterLocation).click();
+
+        findWebElement(dataCenterLocationValueBy).click();
+
+        findWebElement(committedUsage).click();
+
+        findWebElement(committedUsageValueBy).click();
 
         addToEstimateButton.click();
         emailEstimateButton.click();
@@ -136,8 +124,8 @@ public class GoogleCloudProductCalculatorPage extends AbstractPage{
         return this;
     }
 
-    public String getMonthlyCostInfo(){
-        return cost.getText();
+    public Double getMonthlyCostInfo(){
+        return StringUtils.getMonthlyCost(cost.getText());
     }
 
 
@@ -155,12 +143,6 @@ public class GoogleCloudProductCalculatorPage extends AbstractPage{
         return this;
     }
 
-    private WebElement checkWebElementTextAndGetItsParent(WebElement webElement, String engineItem){
-        if(webElement.getText().equals(engineItem)){
-            return webElement.findElement(By.xpath("./.."));
-        }else {
-            return null;
-        }
-    }
+
 
 }

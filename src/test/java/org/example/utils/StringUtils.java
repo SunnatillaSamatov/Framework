@@ -1,6 +1,5 @@
 package org.example.utils;
 
-import org.openqa.selenium.WebElement;
 
 public class StringUtils {
     public static boolean isNumeric(String str) {
@@ -26,4 +25,24 @@ public class StringUtils {
         return monthlyCost;
     }
 
+    public static String getFirstPart(String item){
+        String[] elements = item.split(" ");
+        return elements[0].toUpperCase();
+
+    }
+
+    public static String replaceSpaceToUnderscore(String item){
+        return item.replace(" ","_").toUpperCase();
+    }
+
+    public static String getFirstNumber(String item){
+        String[] elements = item.split("x");
+        return elements[0];
+    }
+
+    public static String getInsideParentheses(String item){
+        String[] elments = item.split(" ");
+        return elments[1].replace("(","").replace(")","");
+
+    }
 }
